@@ -248,8 +248,10 @@ function createClawAndHeldPiece() {
     const clawGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5); // A small box for the claw
     const clawMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 }); // Grey color
     claw = new THREE.Mesh(clawGeometry, clawMaterial);
-    claw.position.set(BOARD_SIZE / 2, BOARD_SIZE + 1, BOARD_SIZE / 2); // Position above the board
-    clawPosition.copy(claw.position);
+    // Initialize clawPosition to the center grid cell (e.g., 2, 2 for a 5x5 board)
+    clawPosition.set(Math.floor(BOARD_SIZE / 2), 0, Math.floor(BOARD_SIZE / 2));
+    // Position claw in 3D space, centered over the grid cell
+    claw.position.set(clawPosition.x + 0.5, BOARD_SIZE + 1, clawPosition.z + 0.5);
     scene.add(claw);
     console.log("Claw added to scene.");
 
@@ -289,4 +291,6 @@ function animate() {
 
 // Start the game when the DOM is fully loaded
 // Using a small timeout to ensure canvas is rendered, as DOMContentLoaded seems insufficient here.
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(init, 100);
+});

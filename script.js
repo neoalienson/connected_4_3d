@@ -121,6 +121,11 @@ function initializeGame() {
     pieces.forEach(piece => scene.remove(piece));
     pieces.length = 0; // Clear the array
 
+    // Hide indicator ball on reset
+    if (indicatorBall) {
+        indicatorBall.visible = false;
+    }
+
     // Create 3D board (placeholder for now, will be more detailed later)
     createBoardVisual();
 

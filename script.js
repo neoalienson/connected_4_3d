@@ -114,19 +114,10 @@ function createBoardVisual() {
     // Clear existing board visuals if any
     scene.children = scene.children.filter(obj => !obj.userData.isBoardPart && !obj.userData.isPiece);
 
-    // Create the base of the board
-    const boardBaseGeometry = new THREE.BoxGeometry(BOARD_SIZE * 1.1, 0.5, BOARD_SIZE * 1.1);
-    const boardBaseMaterial = new THREE.MeshPhongMaterial({ color: BOARD_COLOR });
-    const boardBase = new THREE.Mesh(boardBaseGeometry, boardBaseMaterial);
-    boardBase.position.set(BOARD_SIZE / 2 - 0.5, -0.25, BOARD_SIZE / 2 - 0.5); // Position below the grid
-    boardBase.userData.isBoardPart = true;
-    scene.add(boardBase);
-    console.log("Board base added to scene.");
-
     // Create the grid of rectangular tubes (holes)
-    const tubeWidth = 0.99;
+    const tubeWidth = 1.0;
     const tubeHeight = BOARD_SIZE * 1.1;
-    const tubeDepth = 0.99;
+    const tubeDepth = 1.0;
     const tubeGeometry = new THREE.BoxGeometry(tubeWidth, tubeHeight, tubeDepth);
     const tubeMaterial = new THREE.MeshPhongMaterial({ color: BOARD_COLOR, transparent: true, opacity: 0.3 });
 

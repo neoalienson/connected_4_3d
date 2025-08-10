@@ -39,8 +39,8 @@ let dropTargetY = 0; // The target Y position for the dropping piece
 let dropSpeed = 0.1; // Speed of the dropping animation
 
 // Constants (some moved to gameLogic.js)
-const PIECE_RADIUS = 0.4;
-const PIECE_HEIGHT = 0.8;
+const PIECE_RADIUS = 0.49;
+const PIECE_HEIGHT = 0.98;
 const BOARD_COLOR = 0x0000ff; // Blue
 const PLAYER1_COLOR = 0xff0000; // Red
 const PLAYER2_COLOR = 0xffff00; // Yellow
@@ -124,9 +124,9 @@ function createBoardVisual() {
     console.log("Board base added to scene.");
 
     // Create the grid of rectangular tubes (holes)
-    const tubeWidth = PIECE_RADIUS * 2 * 1.1; // Slightly larger than piece diameter
+    const tubeWidth = 0.99;
     const tubeHeight = BOARD_SIZE * 1.1;
-    const tubeDepth = PIECE_RADIUS * 2 * 1.1;
+    const tubeDepth = 0.99;
     const tubeGeometry = new THREE.BoxGeometry(tubeWidth, tubeHeight, tubeDepth);
     const tubeMaterial = new THREE.MeshPhongMaterial({ color: BOARD_COLOR, transparent: true, opacity: 0.3 });
 

@@ -67,14 +67,29 @@ function init() {
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     renderer.setSize(window.innerWidth * 0.8, window.innerHeight * 0.8); // Adjust size as needed
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true; // Enable shadows
     console.log("Renderer created and sized.");
 
     // Lighting
     const ambientLight = new THREE.AmbientLight(0x404040); // soft white light
     scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1).normalize();
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // Reduced intensity
+    directionalLight.position.set(10, 20, 10); // Positioned higher and further back
+    directionalLight.castShadow = true; // Enable shadow casting for the light
+
+    // Configure shadow properties for the directional light
+    directionalLight.shadow.mapSize.width = 1024; // default is 512
+    directionalLight.shadow.mapSize.height = 1024; // default is 512
+    directionalLight.shadow.camera.near = 0.5; // default
+    directionalLight.shadow.camera.far = 50; // default
+    directionalLight.shadow.camera.left = -10; // default
+    directionalLight.shadow.camera.right = 10; // default
+    directionalLight.shadow.camera.top = 10; // default
+    directionalLight.shadow.camera.bottom = -10; // default
     scene.add(directionalLight);
+
+    const hemisphereLight = new THREE.HemisphereLight(0xb1e1ff, 0xb97a20, 0.5); // Reduced intensity
+    scene.add(hemisphereLight);
 
     // Raycaster for mouse interaction
     raycaster = new THREE.Raycaster();
@@ -140,9 +155,20 @@ function createBoardVisual() {
             const bar = new THREE.Mesh(new THREE.BoxGeometry(barWidth, barHeight, barWidth), barMaterial);
             bar.position.set(x, barHeight / 2, z); // Position at the grid intersection
             bar.userData.isBoardPart = true;
+            bar.receiveShadow = true; // Enable shadow receiving for the bars
             scene.add(bar);
         }
     }
+
+    // Create the base of the board
+    const boardBaseGeometry = new THREE.BoxGeometry(BOARD_SIZE * 1.1, 0.5, BOARD_SIZE * 1.1);
+    const boardBaseMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff }); // White color
+    const boardBase = new THREE.Mesh(boardBaseGeometry, boardBaseMaterial);
+    boardBase.position.set(BOARD_SIZE / 2, -0.25, BOARD_SIZE / 2); // Position below the grid
+    boardBase.userData.isBoardPart = true;
+    boardBase.receiveShadow = true; // Enable shadow receiving for the base
+    scene.add(boardBase);
+    console.log("Board base added to scene.");
 
     // Create invisible planes for raycasting to detect clicks on the top of columns
     const planeGeometry = new THREE.PlaneGeometry(1, 1);
@@ -162,9 +188,10 @@ function createBoardVisual() {
 
     // Create the indicator ball (initially hidden)
     const indicatorGeometry = new THREE.SphereGeometry(PIECE_RADIUS, 32, 32);
-    const indicatorMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, transparent: true, metalness: 1.0, roughness: 0.2 });
+    const indicatorMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true }); // Removed metallic properties
     indicatorBall = new THREE.Mesh(indicatorGeometry, indicatorMaterial);
     indicatorBall.visible = false; // Start hidden
+    indicatorBall.castShadow = true; // Enable shadow casting for the indicator ball
     scene.add(indicatorBall);
 }
 
@@ -256,6 +283,7 @@ function dropPiece() {
     // Copy position and material from original heldPiece
     clonedPiece.position.copy(heldPiece.position);
     clonedPiece.material = heldPiece.material.clone(); // Clone material to avoid shared state issues
+    clonedPiece.castShadow = true; // Enable shadow casting for the cloned piece
     scene.add(clonedPiece); // Add the cloned piece to the scene
     heldPiece = clonedPiece; // Update heldPiece to refer to the cloned piece for dropping animation
     heldPiece.position.copy(claw.position); // Start piece at claw's position
@@ -301,6 +329,7 @@ function createClawAndHeldPiece() {
     heldPiece = new THREE.Mesh(pieceGeometry, pieceMaterial);
     heldPiece.position.set(0, -0.5, 0); // Position relative to the claw (below it)
     heldPiece.material.color.set(getCurrentPlayer() === 1 ? PLAYER1_COLOR : PLAYER2_COLOR); // Set initial color
+    heldPiece.castShadow = true; // Enable shadow casting for the held piece
     claw.add(heldPiece); // Add heldPiece as a child of claw
     console.log("Held piece added to claw.");
 }
@@ -349,6 +378,10 @@ function animate() {
         const time = Date.now();
         const isBright = (Math.floor(time / flashInterval) % 2 === 0);
         indicatorBall.material.opacity = isBright ? 0.8 : 0.2; // Flash between 0.8 (bright) and 0.2 (dim)
+
+        // Update indicator color based on current player
+        const currentPlayerColor = getCurrentPlayer() === 1 ? PLAYER1_COLOR : PLAYER2_COLOR;
+        indicatorBall.material.color.set(currentPlayerColor);
     }
 
     renderer.render(scene, camera);

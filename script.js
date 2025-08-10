@@ -55,7 +55,7 @@ function init() {
     console.log("Scene created.");
 
     // Camera setup
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000); // Aspect ratio is 1 for square canvas
     camera.position.set(BOARD_SIZE / 2, BOARD_SIZE * 1.5, BOARD_SIZE * 2); // Position camera above and in front
     camera.lookAt(BOARD_SIZE / 2, BOARD_SIZE / 2, BOARD_SIZE / 2); // Look at the center of the board
     console.log("Camera created and positioned.");
@@ -65,7 +65,8 @@ function init() {
     const canvas = document.querySelector('#game-canvas'); // Try querySelector
     console.log("Canvas element:", canvas);
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-    renderer.setSize(window.innerWidth * 0.8, window.innerHeight * 0.8); // Adjust size as needed
+    const size = Math.min(window.innerWidth * 0.6, 600);
+    renderer.setSize(size, size); // Adjust size as needed
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true; // Enable shadows
     console.log("Renderer created and sized.");
@@ -200,9 +201,10 @@ function updateStatusDisplay() {
 }
 
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = 1; // Aspect ratio is 1 for square canvas
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth * 0.8, window.innerHeight * 0.8);
+    const size = Math.min(window.innerWidth * 0.6, 600);
+    renderer.setSize(size, size);
 }
 
 

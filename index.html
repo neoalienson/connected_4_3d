@@ -7,10 +7,24 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <div id="status-display">Player 1's Turn</div>
-        <button id="reset-button">Reset Game</button>
-        <canvas id="game-canvas"></canvas>
+    <div id="main-content">
+        <div id="game-container">
+            <div id="status-display">Player 1's Turn</div>
+            <button id="reset-button">Reset Game</button>
+            <canvas id="game-canvas"></canvas>
+        </div>
+        <div id="instructions-container">
+            <h2>Game Instructions</h2>
+            <p>Use Arrow Keys (Left, Right, Up, Down) to move the claw.</p>
+            <p>Press Spacebar to drop a piece.</p>
+            <p>Connect 4 of your pieces in a row (horizontally, vertically, or diagonally) to win!</p>
+            <p>Click "Reset Game" to start a new game.</p>
+
+            <h3>Camera Controls</h3>
+            <p><strong>Rotate View:</strong> Click and drag with the left mouse button.</p>
+            <p><strong>Zoom In/Out:</strong> Scroll the mouse wheel.</p>
+            <p><strong>Pan View:</strong> Click and drag with the right mouse button (or Ctrl + left mouse button).</p>
+        </div>
     </div>
     <script type="module" src="script.js"></script>
 </body>

@@ -94,7 +94,6 @@ function init() {
 
     // Initialize game
     initializeGame();
-    createClawAndHeldPiece(); // Create the claw and held piece after game initialization
     animate();
 }
 
@@ -108,28 +107,42 @@ function initializeGame() {
 
     // Create 3D board (placeholder for now, will be more detailed later)
     createBoardVisual();
+
+    createClawAndHeldPiece(); // Create the claw and held piece here
+
+    // Set initial position and visibility of indicator ball
+    let targetY = -1;
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        if (getBoard()[Math.floor(clawPosition.x)][i][Math.floor(clawPosition.z)] === 0) {
+            targetY = i;
+            break;
+        }
+    }
+    if (targetY !== -1) {
+        indicatorBall.position.set(clawPosition.x + 0.5, targetY + 0.5, clawPosition.z + 0.5);
+        indicatorBall.visible = true;
+    } else {
+        indicatorBall.visible = false; // Hide if column is full from start
+    }
 }
 
 function createBoardVisual() {
     // Clear existing board visuals if any
     scene.children = scene.children.filter(obj => !obj.userData.isBoardPart && !obj.userData.isPiece);
 
-    // Create the grid of rectangular tubes (holes)
-    const tubeWidth = 1.0;
-    const tubeHeight = BOARD_SIZE * 1.1;
-    const tubeDepth = 1.0;
-    const tubeGeometry = new THREE.BoxGeometry(tubeWidth, tubeHeight, tubeDepth);
-    const tubeMaterial = new THREE.MeshPhongMaterial({ color: BOARD_COLOR, transparent: true, opacity: 0.3 });
+    // Create bars at the 4 corners of each tube position
+    const barWidth = 0.1; // Thin bars
+    const barHeight = BOARD_SIZE; // Height of the board
+    const barMaterial = new THREE.MeshPhongMaterial({ color: 0x808080, transparent: true, opacity: 0.3, depthWrite: false });
 
-    for (let x = 0; x < BOARD_SIZE; x++) {
-        for (let z = 0; z < BOARD_SIZE; z++) {
-            const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
-            tube.position.set(x + 0.5, tubeHeight / 2 - 0.25, z + 0.5); // Position tubes to form holes
-            tube.userData.isBoardPart = true;
-            scene.add(tube);
+    for (let x = 0; x <= BOARD_SIZE; x++) { // Iterate one more time for the outer edges
+        for (let z = 0; z <= BOARD_SIZE; z++) { // Iterate one more time for the outer edges
+            const bar = new THREE.Mesh(new THREE.BoxGeometry(barWidth, barHeight, barWidth), barMaterial);
+            bar.position.set(x, barHeight / 2, z); // Position at the grid intersection
+            bar.userData.isBoardPart = true;
+            scene.add(bar);
         }
     }
-    console.log("Board tubes added to scene.");
 
     // Create invisible planes for raycasting to detect clicks on the top of columns
     const planeGeometry = new THREE.PlaneGeometry(1, 1);
@@ -146,6 +159,13 @@ function createBoardVisual() {
             scene.add(plane);
         }
     }
+
+    // Create the indicator ball (initially hidden)
+    const indicatorGeometry = new THREE.SphereGeometry(PIECE_RADIUS, 32, 32);
+    const indicatorMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, transparent: true, metalness: 1.0, roughness: 0.2 });
+    indicatorBall = new THREE.Mesh(indicatorGeometry, indicatorMaterial);
+    indicatorBall.visible = false; // Start hidden
+    scene.add(indicatorBall);
 }
 
 function updateStatusDisplay() {
@@ -160,11 +180,39 @@ function onWindowResize() {
 
 
 
+let indicatorBall; // Declare indicatorBall globally
+
 function onKeyDown(event) {
-    if (isDropping || getGameOver()) return; // Don't move claw if piece is dropping or game is over
+    console.log("onKeyDown: event.key:", event.key);
+    console.log("onKeyDown: isDropping:", isDropping);
+    console.log("onKeyDown: getGameOver():", getGameOver());
+    if (isDropping || getGameOver()) {
+        console.log("onKeyDown: isDropping or getGameOver is true, returning.");
+        return;
+    }
 
     // Update clawPosition based on key press
     updateClawPosition(event.key);
+
+    // Calculate targetY for indicator ball
+    let targetY = -1;
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        if (getBoard()[Math.floor(clawPosition.x)][i][Math.floor(clawPosition.z)] === 0) {
+            targetY = i;
+            break;
+        }
+    }
+
+    console.log("onKeyDown: targetY for indicator:", targetY);
+    if (targetY !== -1) {
+        indicatorBall.position.set(clawPosition.x + 0.5, targetY + 0.5, clawPosition.z + 0.5);
+        indicatorBall.visible = true;
+    } else {
+        // Column is full, indicator should not be visible
+        indicatorBall.visible = false; // Explicitly hide if column is full
+    }
+    console.log("onKeyDown: indicatorBall.visible:", indicatorBall.visible);
+    console.log("onKeyDown: indicatorBall.material.opacity:", indicatorBall.material.opacity);
 
     switch (event.key) {
         case ' ': // Spacebar to drop the piece
@@ -237,7 +285,7 @@ function createClawAndHeldPiece() {
     // Create claw (simple box for now)
     // Create claw (simple box for now)
     const clawGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5); // A small box for the claw
-    const clawMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 }); // Grey color
+    const clawMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 }); // Bright green color for debugging
     claw = new THREE.Mesh(clawGeometry, clawMaterial);
     // Initialize clawPosition to the center grid cell (e.g., 2, 2 for a 5x5 board)
     clawPosition.set(Math.floor(BOARD_SIZE / 2), 0, Math.floor(BOARD_SIZE / 2));
@@ -273,8 +321,34 @@ function animate() {
             // Create the next heldPiece immediately after the current one lands
             if (!getGameOver()) { // Only create if game is not over
                 createClawAndHeldPiece();
+                // Update indicator ball position and visibility for the new turn
+                let targetY = -1;
+                for (let i = 0; i < BOARD_SIZE; i++) {
+                    if (getBoard()[Math.floor(clawPosition.x)][i][Math.floor(clawPosition.z)] === 0) {
+                        targetY = i;
+                        break;
+                    }
+                }
+                console.log("Animate: After piece lands, targetY for indicator:", targetY);
+                console.log("Animate: After piece lands, getGameOver():", getGameOver());
+                if (targetY !== -1) {
+                    indicatorBall.position.set(clawPosition.x + 0.5, targetY + 0.5, clawPosition.z + 0.5);
+                    indicatorBall.visible = true;
+                } else {
+                    indicatorBall.visible = false; // Hide if column is full
+                }
+                console.log("Animate: After piece lands, indicatorBall.visible:", indicatorBall.visible);
+                console.log("Animate: After piece lands, indicatorBall.material.opacity:", indicatorBall.material.opacity);
             }
         }
+    }
+
+    // Flashing effect for indicator ball
+    if (indicatorBall.visible) {
+        const flashInterval = 500; // milliseconds
+        const time = Date.now();
+        const isBright = (Math.floor(time / flashInterval) % 2 === 0);
+        indicatorBall.material.opacity = isBright ? 0.8 : 0.2; // Flash between 0.8 (bright) and 0.2 (dim)
     }
 
     renderer.render(scene, camera);

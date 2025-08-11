@@ -10,7 +10,16 @@
     <div id="main-content">
         <div id="game-container">
             <div id="status-display">Player 1's Turn</div>
-            <button id="reset-button">Reset Game</button>
+            <div id="top-controls">
+                <div id="mobile-controls">
+                    <button id="control-left" class="control-btn">←</button>
+                    <button id="control-up" class="control-btn">↑</button>
+                    <button id="control-down" class="control-btn">↓</button>
+                    <button id="control-right" class="control-btn">→</button>
+                    <button id="control-space" class="control-btn space-btn">DROP</button>
+                    <button id="reset-button" class="control-btn space-btn">Reset</button>
+                </div>
+            </div>
             <canvas id="game-canvas"></canvas>
         </div>
         <div id="instructions-container">
@@ -18,7 +27,7 @@
             <p>Use Arrow Keys (Left, Right, Up, Down) to move the claw.</p>
             <p>Press Spacebar to drop a piece.</p>
             <p>Connect 4 of your pieces in a row (horizontally, vertically, or diagonally) to win!</p>
-            <p>Click "Reset Game" to start a new game.</p>
+            <p>Click "Reset" to start a new game.</p>
 
             <h3>Camera Controls</h3>
             <p><strong>Rotate View:</strong> Click and drag with the left mouse button.</p>

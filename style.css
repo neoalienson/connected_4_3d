@@ -56,23 +56,68 @@ body {
     margin-bottom: 15px;
 }
 
-#reset-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 15px;
-}
-
-#reset-button:hover {
-    background-color: #0056b3;
+/* Top controls container */
+#top-controls {
+    width: 100%;
+    margin-bottom: 15px;
 }
 
 canvas {
     display: block;
     background-color: #000;
     border-radius: 5px;
+}
+
+/* Mobile Controls */
+#mobile-controls {
+    display: flex; /* Always display, not just on mobile */
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.control-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin: 0; /* Remove any default margins */
+}
+
+.control-btn:hover {
+    background-color: #0056b3;
+}
+
+.control-btn:active {
+    background-color: #0056b3;
+    transform: scale(0.95);
+}
+
+.space-btn {
+    width: 60px;
+    border-radius: 20px;
+}
+
+/* Show mobile controls on smaller screens */
+@media (max-width: 768px) {
+    #mobile-controls {
+        justify-content: flex-start;
+    }
+    
+    #instructions-container {
+        width: 100%;
+        max-width: 600px;
+    }
 }

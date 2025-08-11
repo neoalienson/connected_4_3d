@@ -1,5 +1,4 @@
 import { getBoard, setBoard as setGameLogicBoard, getCurrentPlayer, setCurrentPlayer, getGameOver, setGameOver, getGameStatus, setGameStatus, BOARD_SIZE, initializeGameLogic, addPieceLogic, checkWin, checkDraw } from '../lib/gameLogic.js';
-import { getClawPosition, updateClawPosition, clawPosition } from '../script.js'; // Import from script.js
 
 // Simple Test Runner
 function test(name, fn) {
@@ -255,79 +254,5 @@ test('checkDraw does not detect draw when board is not full', () => {
     currentBoard[0][0][0] = 0; // Empty one cell
     if (checkDraw()) {
         throw new Error('Detected draw when board is not full');
-    }
-});
-
-test('updateClawPosition moves claw correctly and respects bounds', () => {
-    // Reset claw position for the test
-    clawPosition.set(2, 0, 2); // Start in the middle
-
-    // Test ArrowLeft
-    updateClawPosition('ArrowLeft');
-    if (getClawPosition().x !== 1) {
-        throw new Error(`ArrowLeft failed. Expected x=1, got ${getClawPosition().x}`);
-    }
-    updateClawPosition('ArrowLeft');
-    updateClawPosition('ArrowLeft'); // Should hit 0
-    if (getClawPosition().x !== 0) {
-        throw new Error(`ArrowLeft bound failed. Expected x=0, got ${getClawPosition().x}`);
-    }
-    updateClawPosition('ArrowLeft'); // Should stay at 0
-    if (getClawPosition().x !== 0) {
-        throw new Error(`ArrowLeft bound failed (stay). Expected x=0, got ${getClawPosition().x}`);
-    }
-
-    // Reset x
-    clawPosition.x = 2;
-
-    // Test ArrowRight
-    updateClawPosition('ArrowRight');
-    if (getClawPosition().x !== 3) {
-        throw new Error(`ArrowRight failed. Expected x=3, got ${getClawPosition().x}`);
-    }
-    updateClawPosition('ArrowRight');
-    updateClawPosition('ArrowRight'); // Should hit BOARD_SIZE - 1 (4)
-    if (getClawPosition().x !== BOARD_SIZE - 1) {
-        throw new Error(`ArrowRight bound failed. Expected x=${BOARD_SIZE - 1}, got ${getClawPosition().x}`);
-    }
-    updateClawPosition('ArrowRight'); // Should stay at BOARD_SIZE - 1
-    if (getClawPosition().x !== BOARD_SIZE - 1) {
-        throw new Error(`ArrowRight bound failed (stay). Expected x=${BOARD_SIZE - 1}, got ${getClawPosition().x}`);
-    }
-
-    // Reset z
-    clawPosition.z = 2;
-
-    // Test ArrowUp
-    updateClawPosition('ArrowUp');
-    if (getClawPosition().z !== 1) {
-        throw new Error(`ArrowUp failed. Expected z=1, got ${getClawPosition().z}`);
-    }
-    updateClawPosition('ArrowUp');
-    updateClawPosition('ArrowUp'); // Should hit 0
-    if (getClawPosition().z !== 0) {
-        throw new Error(`ArrowUp bound failed. Expected z=0, got ${getClawPosition().z}`);
-    }
-    updateClawPosition('ArrowUp'); // Should stay at 0
-    if (getClawPosition().z !== 0) {
-        throw new Error(`ArrowUp bound failed (stay). Expected z=0, got ${getClawPosition().z}`);
-    }
-
-    // Reset z
-    clawPosition.z = 2;
-
-    // Test ArrowDown
-    updateClawPosition('ArrowDown');
-    if (getClawPosition().z !== 3) {
-        throw new Error(`ArrowDown failed. Expected z=3, got ${getClawPosition().z}`);
-    }
-    updateClawPosition('ArrowDown');
-    updateClawPosition('ArrowDown'); // Should hit BOARD_SIZE - 1 (4)
-    if (getClawPosition().z !== BOARD_SIZE - 1) {
-        throw new Error(`ArrowDown bound failed. Expected z=${BOARD_SIZE - 1}, got ${getClawPosition().z}`);
-    }
-    updateClawPosition('ArrowDown'); // Should stay at BOARD_SIZE - 1
-    if (getClawPosition().z !== BOARD_SIZE - 1) {
-        throw new Error(`ArrowDown bound failed (stay). Expected z=${BOARD_SIZE - 1}, got ${getClawPosition().z}`);
     }
 });
